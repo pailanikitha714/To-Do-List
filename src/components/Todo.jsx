@@ -14,71 +14,57 @@ const Todo = () => {
   const [message, setMessage] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load user on refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("loggedInUser");
     if (savedUser) setUser(savedUser);
   }, []);
 
-  // Load todos for current user
   useEffect(() => {
     if (user) {
         const saved = localStorage.getItem(`todos_${user}`);
         setTodos(saved ? JSON.parse(saved) : []);
-        setIsLoaded(true); // ✅ important
+        setIsLoaded(true); 
     }
   }, [user]);
 
-  // Save todos
   useEffect(() => {
     if (user && isLoaded) {
         localStorage.setItem(`todos_${user}`, JSON.stringify(todos));
     }
   }, [todos, user, isLoaded]);
 
-  // REGISTER
   const handleRegister = () => {
     setMessage("");
-
     if (!name || !password) {
       setMessage("Please fill all fields ⚠️");
       return;
     }
-
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-
     if (!emailRegex.test(name)) {
       setMessage("Enter a valid Gmail address ❌");
       return;
     }
-
     const users = JSON.parse(localStorage.getItem("users")) || [];
-
     const exists = users.find((u) => u.name === name);
     if (exists) {
       setMessage("User already exists ❌");
       return;
     }
-
     users.push({ name, password });
     localStorage.setItem("users", JSON.stringify(users));
-
     setMessage("Registered successfully ✅");
     setIsRegister(false);
     setName("");
     setPassword("");
   };
 
-  // LOGIN
   const handleLogin = () => {
     const users = JSON.parse(localStorage.getItem("users")) || [];
-
     const foundUser = users.find(
       (u) =>
         u.name.toLowerCase().trim() === name.toLowerCase().trim() &&
         u.password === password
     );
-
     if (foundUser) {
       localStorage.setItem("loggedInUser", name);
       setUser(name);
@@ -88,14 +74,12 @@ const Todo = () => {
     }
   };
 
-  // LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("loggedInUser");
     setUser(null);
     setTodos([]);
   };
 
-  // TASK FUNCTIONS
   const addTask = () => {
     if (task.trim() === "") return;
     setTodos([...todos, { text: task, completed: false }]);
@@ -125,27 +109,22 @@ const Todo = () => {
     setEditText("");
   };
 
-  // FILTER
   const filteredTodos = todos.filter((t) => {
     if (filter === "completed") return t.completed;
     if (filter === "pending") return !t.completed;
     return true;
   });
 
-  // LOGIN UI
   if (!user) {
     return (
       <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-900 to-purple-800 text-white">
         <div className="backdrop-blur-lg bg-white/10 border border-white/20 shadow-xl rounded-3xl p-8 w-[350px]">
-
           <h1 className="text-2xl mb-6 text-center">
             {isRegister ? "Register 📝" : "Login 🔐"}
           </h1>
-
           {message && (
             <p className="text-red-400 text-center mb-3">{message}</p>
           )}
-
           <input
             type="text"
             placeholder="Enter your email"
@@ -153,7 +132,6 @@ const Todo = () => {
             onChange={(e) => setName(e.target.value)}
             className="w-full mb-3 px-4 py-3 rounded-full bg-white/20 outline-none"
           />
-
           <input
             type="password"
             placeholder="Password"
@@ -161,7 +139,6 @@ const Todo = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full mb-4 px-4 py-2 rounded-full bg-white/20 outline-none"
           />
-
           {isRegister ? (
             <button
               onClick={handleRegister}
@@ -191,14 +168,12 @@ const Todo = () => {
     );
   }
 
-  // MAIN TODO UI
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-800 text-white px-6 py-8">
 
         {/* HEADER */}
         <div className="flex justify-between items-center mb-8 max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold">✨ To-Do List</h1>
-        
         <div className="flex items-center gap-4">
             <button
             onClick={handleLogout}
@@ -234,7 +209,6 @@ const Todo = () => {
             if (type === "All") color = "bg-blue-500";
             if (type === "Completed") color = "bg-green-500";
             if (type === "Pending") color = "bg-yellow-500";
-
             return (
             <button
                 key={type}
@@ -257,7 +231,6 @@ const Todo = () => {
 
         {filteredTodos.map((t) => {
             const realIndex = todos.findIndex(item => item === t);
-
             return (
             <div
                 key={realIndex}
@@ -286,7 +259,6 @@ const Todo = () => {
                     </span>
                 )}
                 </div>
-
                 <div className="flex gap-3 text-lg">
                 {editIndex === realIndex ? (
                     <button onClick={saveEdit}>📁</button>
@@ -307,7 +279,7 @@ const Todo = () => {
             onClick={() => setTodos([])}
             className="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg"
             >
-            🧹 Clear All
+            Clear All
             </button>
         </div>
         )}
